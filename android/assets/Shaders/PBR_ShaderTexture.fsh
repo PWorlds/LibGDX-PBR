@@ -7,19 +7,19 @@ precision highp float;
 
 uniform vec3      vLight0;
 
-varying vec3 eye;
-varying vec3 normal;			//NOTE: Need to be high precision
-varying vec3 halfvecLight0; 	//NOTE: Need to be high precision
-
 uniform samplerCube sCubemapTexture;
 
 uniform sampler2D albedoTexture;
 uniform sampler2D metallicTexture;
 uniform sampler2D roughnessTexture;
 uniform sampler2D ambientOcclusionTexture;
+uniform sampler2D normalTexture;
+uniform sampler2D heightTexture;
+uniform mat4      u_projTrans;
+varying vec4 p;
+varying vec3 v_normal;
 
 varying vec2 texCoord;
-varying vec3 worldNormal;
 
 #define M_PI 3.1415926535897932384626433832795
 
@@ -30,6 +30,16 @@ vec3 FresnelSchlickWithRoughness(vec3 SpecularColor, vec3 E, vec3 N, float Gloss
 
 void main()
 {
+    vec3 textNormal = normalize(texture2D( normalTexture, texCoord ).rgb*2.0 - 1.0);
+
+    vec3 worldNormal = vec3(mat3(u_projTrans[0].xyz, u_projTrans[1].xyz, u_projTrans[2].xyz) * (v_normal+textNormal));
+
+    vec3 normal = worldNormal;
+
+    vec4 textH = vec4(texture2D( heightTexture, texCoord ).rgb,0);
+    vec3 eye = -(u_projTrans * (p+10.0*textH)).xyz;
+    vec3 halfvecLight0 = normalize(-vLight0) + normalize(eye);
+
     vec3 albedo=texture2D(albedoTexture,texCoord).rgb;
     float metallic=texture2D(metallicTexture,texCoord).r;
     vec3 vMaterialDiffuse=albedo - albedo*metallic;

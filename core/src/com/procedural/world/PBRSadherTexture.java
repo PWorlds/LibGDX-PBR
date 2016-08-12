@@ -37,6 +37,9 @@ public class PBRSadherTexture implements Shader {
     int albedoTexture;
     int metallicTexture;
 
+    int normalTexture;
+    int	heightTexture;
+
     int sCubemapTexture;
     int	roughnessTexture;
 
@@ -71,6 +74,8 @@ public class PBRSadherTexture implements Shader {
         sCubemapTexture = program.getUniformLocation("sCubemapTexture");
         roughnessTexture = program.getUniformLocation("roughnessTexture");
         ambientOcclusionTexture = program.getUniformLocation("ambientOcclusionTexture");
+        normalTexture = program.getUniformLocation("normalTexture");
+        heightTexture = program.getUniformLocation("heightTexture");
     }
 
     @Override
@@ -140,6 +145,10 @@ public class PBRSadherTexture implements Shader {
             program.setUniformi(ambientOcclusionTexture, 3);
             ((PBRTextureAttribute)currentMaterial.get(PBRTextureAttribute.Roughness)).textureDescription.texture.bind(4);
             program.setUniformi(roughnessTexture, 4);
+            ((PBRTextureAttribute)currentMaterial.get(PBRTextureAttribute.Normal)).textureDescription.texture.bind(5);
+            program.setUniformi(normalTexture, 5);
+            ((PBRTextureAttribute)currentMaterial.get(PBRTextureAttribute.Height)).textureDescription.texture.bind(6);
+            program.setUniformi(heightTexture, 6);
         }
 
 

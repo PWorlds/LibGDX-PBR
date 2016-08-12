@@ -21,8 +21,12 @@ public class PBRTextureAttribute extends Attribute {
     public final static long Roughness = register(RoughnessAlias);
     public final static String AmbientOcclusionAlias = "ambientOcclusionTexture";
     public final static long AmbientOcclusion = register(AmbientOcclusionAlias);
+    public final static String NormalAlias = "normalTexture";
+    public final static long Normal = register(NormalAlias);
+    public final static String HeightAlias = "heightTexture";
+    public final static long Height = register(HeightAlias);
 
-    protected static long Mask = Albedo | Metallic | Roughness | AmbientOcclusion;
+    protected static long Mask = Albedo | Metallic | Roughness | AmbientOcclusion | Normal | Height;
 
     public final static boolean is (final long mask) {
         return (mask & Mask) != 0;
@@ -148,5 +152,21 @@ public class PBRTextureAttribute extends Attribute {
 
     public static PBRTextureAttribute createAmbientOcclusion (final TextureRegion region) {
         return new PBRTextureAttribute(AmbientOcclusion, region);
+    }
+
+    public static PBRTextureAttribute createNormal (final Texture texture) {
+        return new PBRTextureAttribute(Normal, texture);
+    }
+
+    public static PBRTextureAttribute createNormal (final TextureRegion region) {
+        return new PBRTextureAttribute(Normal, region);
+    }
+
+    public static PBRTextureAttribute createHeight (final Texture texture) {
+        return new PBRTextureAttribute(Height, texture);
+    }
+
+    public static PBRTextureAttribute createHeight (final TextureRegion region) {
+        return new PBRTextureAttribute(Height, region);
     }
 }

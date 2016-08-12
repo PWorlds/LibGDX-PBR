@@ -47,7 +47,7 @@ public class PBRTestAPP extends ApplicationAdapter {
 	BitmapFont font;
 	SpriteBatch spriteBatch;
 	Map<String,Material> materials=new HashMap<String, Material>();
-	int actMaterial=1;
+	int actMaterial=materials.size()-1;
 
 	Material createMaterial(String materialName){
 		Material material=new Material();
@@ -55,6 +55,8 @@ public class PBRTestAPP extends ApplicationAdapter {
 		material.set(PBRTextureAttribute.createMetallic(new Texture("materials/" + materialName + "_Metallic.png")));
 		material.set(PBRTextureAttribute.createRoughness(new Texture("materials/" + materialName + "_Roughness.png")));
 		material.set(PBRTextureAttribute.createAmbientOcclusion(new Texture("materials/" + materialName + "_Ambient_Occlusion.png")));
+		material.set(PBRTextureAttribute.createHeight(new Texture("materials/" + materialName + "_Height.png")));
+		material.set(PBRTextureAttribute.createNormal(new Texture("materials/" + materialName + "_Normal.png")));
 
 		return material;
 	}
