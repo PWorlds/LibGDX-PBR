@@ -48,7 +48,7 @@ void main()
     vec2 vRoughness=vec2(1.0-texture2D(roughnessTexture,texCoord).r,5);
     float ambientOcclusion=1.0-texture2D(ambientOcclusionTexture,texCoord).r;
 
-    vec3 dynamicDiffuse = dot( worldNormal, normalize(-vLight0+eye) ) * vMaterialDiffuse  / 3.14f;
+    vec3 dynamicDiffuse = dot( worldNormal, normalize(-vLight0+eye) ) * vMaterialDiffuse  / 3.14;
 
 	// Mipmap index
 	float MipmapIndex = vRoughness.x * vRoughness.y;	//vRoughness.y = mip-level - 1

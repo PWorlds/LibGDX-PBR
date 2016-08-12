@@ -43,5 +43,5 @@ void main(void)
     eye = -(u_projTrans * p).xyz;
     halfvecLight0 = normalize(-vLight0) + normalize(eye);
     
-    dynamicDiffuse = dot( worldNormal, normalize(-vLight0+eye) ) * vMaterialDiffuse  / 3.14f;
+    dynamicDiffuse = dot( worldNormal, normalize(-vLight0+eye) ) * vMaterialDiffuse  / 3.14;
 }
