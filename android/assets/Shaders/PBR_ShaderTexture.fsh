@@ -46,7 +46,7 @@ void main()
     vec4 vMaterialSpecular=vec4(mix(albedo, vec3(0.8*0.5),metallic), 10);
 
     vec2 vRoughness=vec2(1.0-texture2D(roughnessTexture,texCoord).r,5);
-    float ambientOcclusion=1-texture2D(ambientOcclusionTexture,texCoord).r;
+    float ambientOcclusion=1.0-texture2D(ambientOcclusionTexture,texCoord).r;
 
     vec3 dynamicDiffuse = dot( worldNormal, normalize(-vLight0+eye) ) * vMaterialDiffuse  / 3.14f;
 
