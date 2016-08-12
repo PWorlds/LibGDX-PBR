@@ -32,7 +32,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.UBJsonReader;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PBRTestAPP extends ApplicationAdapter {
@@ -47,7 +49,8 @@ public class PBRTestAPP extends ApplicationAdapter {
 	BitmapFont font;
 	SpriteBatch spriteBatch;
 	Map<String,Material> materials=new HashMap<String, Material>();
-	int actMaterial=materials.size()-1;
+	List<String> matNames;
+	int actMaterial=0;
 
 	Material createMaterial(String materialName){
 		Material material=new Material();
@@ -72,6 +75,14 @@ public class PBRTestAPP extends ApplicationAdapter {
 		materials.put("Generic", null);
 		materials.put("Rough Rock", createMaterial("roughrockface4"));
 		materials.put("Bricks", createMaterial("mybricks3"));
+		materials.put("Rusted Iron", createMaterial("rustediron-streaks"));
+		materials.put("Carved Stone", createMaterial("carvedlimestoneground1"));
+		materials.put("Grass", createMaterial("grass1"));
+		materials.put("Floor", createMaterial("cavefloor1"));
+
+		matNames = new ArrayList<String>(materials.keySet());
+
+		actMaterial=matNames.indexOf("Generic");
 
 		modelBatch = new ModelBatch();
 		spriteBatch=new SpriteBatch();
@@ -130,9 +141,9 @@ public class PBRTestAPP extends ApplicationAdapter {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				actMaterial++;
-				if(actMaterial==materials.size()) actMaterial=0;
+				if(actMaterial>=materials.size()) actMaterial=0;
 
-				String matName=(String) materials.keySet().toArray()[actMaterial];
+				String matName=matNames.get(actMaterial);
 				btn.setText(matName);
 
 				obj.material=materials.get(matName);
