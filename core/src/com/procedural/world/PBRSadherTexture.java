@@ -2,28 +2,28 @@ package com.procedural.world;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cubemap;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.VertexAttribute;
+import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.Shader;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.utils.IntArray;
-import com.badlogic.gdx.graphics.VertexAttribute;
-import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.utils.IntIntMap;
 
-
 /**
- * Created by PWorld on 09/08/2016.
+ * Created by pWorld on 12/08/2016.
  */
-public class PBRShader implements Shader {
+public class PBRSadherTexture implements Shader {
     ShaderProgram program;
     Camera camera;
     RenderContext context;
@@ -34,20 +34,16 @@ public class PBRShader implements Shader {
 
     int vLight0;
 
-    int albedo;
-    int metallic;
+    int albedoTexture;
+    int metallicTexture;
 
     int sCubemapTexture;
-    int	vRoughness;
+    int	roughnessTexture;
 
-    int ambientOcclusion;
-
-    public Vector3 albedoColor=new Vector3(0.f,0.f,0.9f);
-    public float metallicValue=0.5f;
-    public float rougness=0.9f;
-    public float ambientOcclusionValue=1;
+    int ambientOcclusionTexture;
 
     Mesh currentMesh;
+    Material currentMaterial;
 
     public void loadReflection(String refl){
         ref=new Cubemap(Gdx.files.internal("cubemaps/" + refl + "_c00.bmp"), Gdx.files.internal("cubemaps/" + refl + "_c01.bmp"),
@@ -61,8 +57,8 @@ public class PBRShader implements Shader {
     public void init() {
         loadReflection("rnl_phong_m00");
 
-        String vert = Gdx.files.internal("Shaders/VS_ShaderPlain.vsh").readString();
-        String frag = Gdx.files.internal("Shaders/ShaderPlain.fsh").readString();
+        String vert = Gdx.files.internal("Shaders/VS_PBR_ShaderTexture.vsh").readString();
+        String frag = Gdx.files.internal("Shaders/PBR_ShaderTexture.fsh").readString();
         program = new ShaderProgram(vert, frag);
         if (!program.isCompiled()){
             throw new GdxRuntimeException(program.getLog());
@@ -70,11 +66,11 @@ public class PBRShader implements Shader {
         u_worldTrans = program.getUniformLocation("u_worldTrans");
         u_projTrans = program.getUniformLocation("u_projTrans");
         vLight0 = program.getUniformLocation("vLight0");
-        albedo = program.getUniformLocation("albedo");
-        metallic = program.getUniformLocation("metallic");
+        albedoTexture = program.getUniformLocation("albedoTexture");
+        metallicTexture = program.getUniformLocation("metallicTexture");
         sCubemapTexture = program.getUniformLocation("sCubemapTexture");
-        vRoughness = program.getUniformLocation("vRoughness");
-        ambientOcclusion = program.getUniformLocation("ambientOcclusion");
+        roughnessTexture = program.getUniformLocation("roughnessTexture");
+        ambientOcclusionTexture = program.getUniformLocation("ambientOcclusionTexture");
     }
 
     @Override
@@ -83,6 +79,7 @@ public class PBRShader implements Shader {
             currentMesh.unbind(program, tempArray.items);
             currentMesh = null;
         }
+        currentMaterial=null;
         program.end();
     }
 
@@ -131,15 +128,25 @@ public class PBRShader implements Shader {
     @Override
     public void render(Renderable renderable) {
         program.setUniformMatrix(u_worldTrans, renderable.worldTransform);
-        program.setUniformf(albedo, albedoColor);
-        program.setUniformf(metallic, metallicValue);
-        program.setUniformf(ambientOcclusion, ambientOcclusionValue);
+
+        if(currentMaterial!=renderable.material){
+            currentMaterial=renderable.material;
+
+            ((PBRTextureAttribute)currentMaterial.get(PBRTextureAttribute.Albedo)).textureDescription.texture.bind(1);
+            program.setUniformi(albedoTexture, 1);
+            ((PBRTextureAttribute)currentMaterial.get(PBRTextureAttribute.Metallic)).textureDescription.texture.bind(2);
+            program.setUniformi(metallicTexture, 2);
+            ((PBRTextureAttribute)currentMaterial.get(PBRTextureAttribute.AmbientOcclusion)).textureDescription.texture.bind(3);
+            program.setUniformi(ambientOcclusionTexture, 3);
+            ((PBRTextureAttribute)currentMaterial.get(PBRTextureAttribute.Roughness)).textureDescription.texture.bind(4);
+            program.setUniformi(roughnessTexture, 4);
+        }
+
+
         program.setUniformf(vLight0, new Vector3(2.00f,-2.00f,-2.00f));
 
         ref.bind(0);
         program.setUniformi(sCubemapTexture, 0);
-
-        program.setUniformf(vRoughness, new Vector2(rougness,5));
 
         if (currentMesh != renderable.meshPart.mesh) {
             if (currentMesh != null)
